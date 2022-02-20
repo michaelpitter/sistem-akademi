@@ -46,34 +46,49 @@
                 </div>
                 <div class="card-body">
                     <div class="card-body">
-                        <form action="/dashboard/master/lecturers" class="row d-flex" id="filterLecturers">
-                            <div class="col-4 d-inline">
-                                <div class="input-group mb-3">
+                        {{-- <form action="/dashboard/master/lecturers" class="row" id="filter"> --}}
+                        <div class="row">
+                            <div class="col-4 d-flex">
+                                {{-- <div class="input-group mb-3"> --}}
+                                <div class="input-group mb-3 d-block">
+                                    <form action="/dashboard/master/lecturers" class="d-flex">
+                                        @if(request('orderBy'))
+                                            <input type="hidden" name="orderBy" value="{{ request('orderBy') }}">
+                                        @endif
                                         <input
                                             type="text"
-                                            class="form-control d-inline"
+                                            class="form-control"
                                             placeholder="Search lecturer"
                                             name="search"
                                             value="{{ request('search') }}"
                                         >
                                         <button class="btn btn-primary" type="submit">Search</button>
-                                    </div>
+                                    </form>
                                 </div>
-                                <div class="col-5">b</div>
-                                <div class="col-3">
-                                    <div>
+                            </div>
+                            <div class="col-5">
+                                {{-- filter tmbhn --}}
+                            </div>
+                            <div class="col-3">
+                                <div>
+                                    <form action="/dashboard/master/lecturers" id="filter">
+                                        @if(request('search')!=null)
+                                            <input type="hidden" name="search" value="{{ request('search') }}">
+                                        @endif
                                         <select
                                             class="form-control"
-                                            name="sort"
+                                            name="orderBy"
                                             class="float-right"
                                             onchange="submitFilter()"
                                         >
-                                            <option value="Newest" @if(request('sort') == "Newest") selected @endif >Newest</option>
-                                            <option value="Oldest" @if(request('sort') == "Oldest") selected @endif >Oldest</option>
+                                        <option value="asc" @if(request('orderBy') == "asc") selected @endif >Terlama</option>
+                                        <option value="desc" @if(request('orderBy') == "desc") selected @endif >Terbaru</option>
                                         </select>
-                                    </div>
+                                    </form>
                                 </div>
-                        </form>
+                            </div>
+                        </div>
+                        {{-- </form> --}}
                         <table id="tableMasterLecturer" class="table table-bordered table-striped w-7">
                             <thead>
                                 <tr>
@@ -83,6 +98,7 @@
                                     <th>Birth</th>
                                     <th>Phone</th>
                                     <th>Address</th>
+                                    <th>Created_at</th>
                                     <th>
                                         <div class="text-right">
                                             Action
@@ -100,6 +116,7 @@
                                             <td>{{ $lecturer->pob }}, {{ date("d M Y",strtotime($lecturer->dob)) }}</td>
                                             <td>{{ $lecturer->phone }}</td>
                                             <td>{{ $lecturer->address }}</td>
+                                            <td>{{ $lecturer->created_at->diffForHumans() }}</td>
                                             <td>
                                                 <div class="float-right">
                                                     {{-- <a href="/dashboard/posts/{{ $post->slug }}" class="badge bg-info"> --}}
@@ -160,7 +177,8 @@
 
     <script>
         function submitFilter(){
-            document.getElementById("filterLecturers").submit();
+            // console.log("triiger");
+            document.getElementById("filter").submit();
         }
     </script>
 @endsection

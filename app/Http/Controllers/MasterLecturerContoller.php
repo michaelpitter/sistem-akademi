@@ -14,25 +14,28 @@ class MasterLecturerContoller extends Controller
      */
     public function index()
     {
-        $request = request();
-        // unset($request['search']);
-        $request->request->remove("sort");
-        $filter = collect(request())->filter(function($value){
-            return $value != 'Newest' && $value != null;
-        })->all();
-
+        $request = collect(request()->all());
+        if($request){
+            $q = $request
+                // ->filter(fn($e) => $e == "asc" || $e == NULL)
+                ->filter(fn($e) => $e == NULL)
+                ->each(fn($e,$key)=>$request->pull($key));
+            if($q->isNotEmpty()){
+                $q = $request->map(fn($i,$k) => $k."=".$i)->join('&');
+                return redirect('/dashboard/master/lecturers?'.$q);
+            }
+        }
         $breadcrumb = collect([
             "/dashboard" => "Dashboard",
             "title" => "Lecturer"
         ]);
 
         $title = $breadcrumb->last();
-
         return view('dashboard.master.lecturer.index',
             [
                 'breadcrumb' => $breadcrumb,
                 'title' => $title,
-                'lecturers' => Lecturer::latest()->filter($filter)->paginate(10),
+                'lecturers' => Lecturer::filter(request(['search','orderBy']))->paginate(10)->withQueryString(),
             ]
         );
     }

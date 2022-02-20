@@ -19,6 +19,12 @@ class Lecturer extends Model
                     ->orWhere('nidn','like','%'.$search.'%');
             }
         );
+        $query->when(
+            $filters['orderBy']??false,
+            function ($query,$sortBy){
+                return $query->orderBy('created_at',$sortBy);
+            }
+        );
     }
 
 }
